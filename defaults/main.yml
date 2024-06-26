@@ -1,7 +1,11 @@
 ---
 
+pipewire_directory: /etc/pipewire
+pipewire_pulse_service: /usr/lib/systemd/user/pipewire-pulse.socket
+pipewire_pulse_socket: /tmp/pulse-socket
 steam_packages:
   - dbus-x11
   - steam
+steam_user: steam
 
 ...
