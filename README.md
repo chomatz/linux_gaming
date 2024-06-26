@@ -6,5 +6,7 @@ ansible role for provisioning gaming platforms
 ## variables
 
 ## dependencies
+requires the following role(s):
+- [rpm_fusion](https://github.com/chomatz/rpm_fusion)
 
 ## examples
