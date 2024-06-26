@@ -1,0 +1,120 @@
+---
+
+- name: ensure tasks run only on selected os releases
+  block:
+
+    - name: "create steam user - {{ steam.user }}"
+      ansible.builtin.user:
+        name: "{{ steam_user }}"
+        home: "/home/{{ steam_user }}"
+        system: true
+        groups: audio,input,games
+
+    - name: chown error handling if the recursion depth limit is reached
+      block:
+
+        - name: "set ownership on /home/{{ steam_user }}"
+          ansible.builtin.file:
+            path: "/home/{{ steam_user }}"
+            recurse: true
+            owner: "{{ steam_user }}"
+            group: "{{ steam_user }}"
+
+      rescue:
+
+        - name: "set ownership on /home/{{ steam.user }} using chown"
+          ansible.builtin.command:
+            cmd: "/usr/bin/chown -R {{ steam_user }}:{{ steam_user }} /home/{{ steam_user }}"
+
+    - name: remove default pipewire-pulse socket in systemd service file
+      ansible.builtin.lineinfile:
+        path: "{{ pipewire_pulse_service }}"
+        regexp: '^.*ListenStream=%t/pulse/native'
+        state: absent
+
+    - name: create custom pipewire-pulse configuration in systemd service file
+      ansible.builtin.blockinfile:
+        path: "{{ pipewire_pulse_service }}"
+        marker: "##### {mark} custom pipewire-pulse socket #####"
+        insertafter: "\\[Socket\\]"
+        block: |
+          ExecStartPre=rm -f {{ pipewire_pulse_socket }}
+          ExecStopPost=rm -f {{ pipewire_pulse_socket }}
+          ListenStream={{ pipewire_pulse_socket }}
+          SocketGroup=audio
+          SocketMode=0660
+
+    - name: create default pipewire directory
+      ansible.builtin.file:
+        path: "{{ pipewire_directory }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: create default pipewire-pulse configuration
+      ansible.builtin.copy:
+        src: /usr/share/pipewire/pipewire-pulse.conf
+        dest: "{{ pipewire_directory }}/pipewire-pulse.conf"
+        remote_src: true
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: update socket in default pipewire-pulse configuration
+      ansible.builtin.replace:
+        path: "{{ pipewire_directory }}/pipewire-pulse.conf"
+        regexp: '#"unix:/tmp/something"'
+        replace: '"unix:{{ pipewire_pulse_socket }}"'
+
+    - name: set PULSE_SERVER environment variable
+      ansible.builtin.copy:
+        dest: /etc/profile.d/pipewire-pulse.sh
+        content: "export PULSE_SERVER={{ pipewire_pulse_socket }}"
+
+    - name: create sudoers file for running steam
+      ansible.builtin.copy:
+        dest: /etc/sudoers.d/steam
+        content: "%games ALL=({{ steam_user }}) NOPASSWD:SETENV: /usr/bin/steam"
+
+    - name: create command-line application launcher
+      ansible.builtin.template:
+        src: steam_sudo.j2
+        dest: /usr/bin/steam_sudo
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: create graphical application launcher
+      ansible.builtin.template:
+        src: steam_sudo.desktop.j2
+        dest: /usr/share/applications/steam_sudo.desktop
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: how to run steam as a different user
+      ansible.builtin.debug:
+        msg: |
+          -----------------------------------------------------------------------------------------------------------------------------
+          make sure your user is a member of the audio and games groups - you may need to login again for the first item to take effect
+          -----------------------------------------------------------------------------------------------------------------------------
+          sudo usermod -aG games,audio <your_user_name>
+          ------------------------------------------------------------
+          option 1: run the following command manually to launch steam
+          ------------------------------------------------------------
+          xhost +; sudo -u {{ steam_user }} PULSE_SERVER=/{{ pipewire_pulse_socket }} XDG_RUNTIME_DIR=/tmp/{{ steam_user }} steam
+          -------------------------------------
+          option 2: run the provided cli script
+          -------------------------------------
+          /usr/bin/steam_sudo
+          ----------------------------------------------
+          option 3: run the provided desktop application
+          ----------------------------------------------
+          launch "Steam via sudo" in the graphical interface
+      delegate_to: localhost
+      run_once: true
+
+  when: ansible_distribution == "Fedora"
+
+...
