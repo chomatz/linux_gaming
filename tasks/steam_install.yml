@@ -1,0 +1,12 @@
+---
+
+- name: enable rpm fusion repositories
+  ansilbe.builtin.include_role:
+    name: rpm_fusion
+
+- name: install steam
+  ansible.builtin.package:
+    name: "{{ steam_packages }}"
+    state: present
+
+...
