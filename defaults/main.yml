@@ -1,7 +1,7 @@
 ---
 
 steam_packages:
-  - dbus-xll
+  - dbus-x11
   - steam
 
 ...
