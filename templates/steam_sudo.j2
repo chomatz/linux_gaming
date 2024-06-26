@@ -1,0 +1,3 @@
+#!/bin/env bash
+/usr/bin/xhost +
+/usr/bin/sudo -u {{ steam_user }} PULSE_SERVER={{ pipewire_pulse_socket }} XDG_RUNTIME_DIR=/tmp/{{ steam_user }} /usr/bin/steam
