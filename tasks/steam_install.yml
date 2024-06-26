@@ -1,7 +1,7 @@
 ---
 
 - name: enable rpm fusion repositories
-  ansilbe.builtin.include_role:
+  ansible.builtin.include_role:
     name: rpm_fusion
 
 - name: install steam
