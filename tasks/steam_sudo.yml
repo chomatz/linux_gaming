@@ -3,7 +3,7 @@
 - name: ensure tasks run only on selected os releases
   block:
 
-    - name: "create steam user - {{ steam.user }}"
+    - name: "create steam user - {{ steam_user }}"
       ansible.builtin.user:
         name: "{{ steam_user }}"
         home: "/home/{{ steam_user }}"
@@ -22,7 +22,7 @@
 
       rescue:
 
-        - name: "set ownership on /home/{{ steam.user }} using chown"
+        - name: "set ownership on /home/{{ steam_user }} using chown"
           ansible.builtin.command:
             cmd: "/usr/bin/chown -R {{ steam_user }}:{{ steam_user }} /home/{{ steam_user }}"
 
