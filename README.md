@@ -22,3 +22,9 @@ requires the following role(s):
     name: linux_gaming
     tasks_from: steam_sudo.yml
 ```
+```
+- name: install xone dongle/gamepad driver
+  ansible.builtin.include_role:
+    name: linux_gaming
+    tasks_from: xone_driver.yml
+```
