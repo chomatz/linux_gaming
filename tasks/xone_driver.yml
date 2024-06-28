@@ -1,0 +1,47 @@
+---
+
+- name: ensure tasks run only on selected os releases
+  block:
+
+    - name: install xone dependencies
+      ansible.builtin.package:
+        name: "{{ xone_packages }}"
+        state: latest
+
+    - name: clone xone repository
+      ansible.builtin.git:
+        repo: "{{ xone_repository_remote }}"
+        dest: "{{ xone_repository_local }}"
+        update: true
+
+    - name: provide an error handler if the xone driver is already installed
+      block:
+
+        - name: install xone driver
+          ansible.builtin.command:
+            cmd: ./install.sh --release
+            chdir: "{{ xone_repository_local }}"
+          register: xone_install
+
+      rescue:
+
+        - name: uninstall existing xone driver
+          ansible.builtin.command:
+            cmd: ./uninstall.sh
+            chdir: "{{ xone_repository_local }}"
+          when:
+            - xone_install is failed
+            - "'already installed' in xone_install.stderr"
+
+        - name: reinstall xone driver
+          ansible.builtin.command:
+            cmd: ./install.sh --release
+            chdir: "{{ xone_repository_local }}"
+
+    - name: download firmware
+      ansible.builtin.command:
+        cmd: xone-get-firmware.sh --skip-disclaimer
+
+  when: ansible_distribution == "Fedora"
+
+...
