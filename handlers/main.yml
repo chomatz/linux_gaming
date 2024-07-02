@@ -1,0 +1,7 @@
+---
+
+- name: enable steam deck read-only mode
+  ansible.builtin.command:
+    cmd: steamos-readonly enable
+
+...
