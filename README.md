@@ -28,3 +28,16 @@ requires the following role(s):
     name: linux_gaming
     tasks_from: xone_driver.yml
 ```
+```
+- name: disable steam deck readonly protection
+  ansible.builtin.include_role:
+    name: linux_gaming
+    tasks_from: steam_deck_readonly_toggle.yml
+```
+```
+- name: initialize steam deck repositories
+  ansible.builtin.include_role:
+    name: linux_gaming
+    tasks_from: steam_deck_repository.yml
+
+```
