@@ -41,7 +41,8 @@
     - name: download firmware
       ansible.builtin.command:
         cmd: xone-get-firmware.sh --skip-disclaimer
-  
+
+  ignore_errors: true
   when: ansible_distribution == "Fedora"
 
 ...
