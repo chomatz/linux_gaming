@@ -37,6 +37,7 @@
           ansible.builtin.command:
             cmd: ./install.sh --release
             chdir: "{{ xone_repository_local }}"
+          ignore_errors: true
 
     - name: download firmware
       ansible.builtin.command:
