@@ -1,12 +1,17 @@
 ---
 
-- name: enable rpm fusion repositories
-  ansible.builtin.include_role:
-    name: rpm_fusion
+- name: ensure tasks run only on selected os releases
+  block:
 
-- name: install steam
-  ansible.builtin.package:
-    name: "{{ steam_packages }}"
-    state: present
+    - name: enable rpm fusion repositories
+      ansible.builtin.include_role:
+        name: rpm_fusion
+
+    - name: install steam
+      ansible.builtin.package:
+        name: "{{ steam_packages }}"
+        state: present
+
+  when: ansible_distribution == "Fedora"
 
 ...
