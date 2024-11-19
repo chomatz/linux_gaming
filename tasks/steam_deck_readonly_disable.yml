@@ -1,0 +1,31 @@
+---
+
+- name: ensure tasks run only on selected os releases
+  block:
+
+    - name: check read-only status
+      ansible.builtin.command:
+        cmd: steamos-readonly status
+      changed_when: false
+      failed_when:
+        - steamos_read_only is failed
+        - "'disabled' not in steamos_read_only.stdout"
+      register: steamos_read_only
+
+    - name: display read-only status
+      ansible.builtin.debug:
+        var: steamos_read_only.stdout
+        verbosity: 1
+
+    - name: disable steam deck read-only mode
+      ansible.builtin.command:
+        cmd: steamos-readonly disable
+      when:
+        - steamos_read_only.stdout is defined
+        - steamos_read_only.stdout == "enabled"
+
+  when:
+    - ansible_distribution == "Archlinux"
+    - ansible_distribution_release == "holo"
+
+...
