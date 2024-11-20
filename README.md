@@ -35,10 +35,12 @@ requires the following role(s):
     name: linux_gaming
     tasks_from: steam_deck_readonly_toggle.yml
 ```
+```
 - name: disable steam deck readonly protection
   ansible.builtin.include_role:
     name: linux_gaming
     tasks_from: steam_deck_readonly_disable.yml
+```
 ```
 - name: enable steam deck readonly protection
   ansible.builtin.include_role:
