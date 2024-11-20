@@ -1,4 +1,5 @@
-# linux_gaming
+linux_gaming
+============
 ansible role for provisioning gaming platforms
 
 ## requirements
