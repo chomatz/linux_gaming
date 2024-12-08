@@ -13,6 +13,10 @@
         repo: "{{ xone_repository_remote }}"
         dest: "{{ xone_repository_local }}"
         update: true
+      register: xone_repo
+      failed_when:
+        - xone_repo is failed
+        - "'Local modifications exist' not in xone_repo.msg"
 
     - name: provide an error handler if the xone driver is already installed
       block:
@@ -42,7 +46,6 @@
       ansible.builtin.command:
         cmd: xone-get-firmware.sh --skip-disclaimer
 
-  ignore_errors: true
   when: ansible_distribution == "Fedora"
 
 ...
