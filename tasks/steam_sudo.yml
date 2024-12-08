@@ -91,26 +91,24 @@
         dest: /usr/share/applications/steam_sudo.desktop
         owner: root
         group: root
-        mode: "0644"
+        mo de: "0644"
 
-    - name: how to run steam as a different user
-      ansible.builtin.debug:
-        msg: |
-          -----------------------------------------------------------------------------------------------------------------------------
-          make sure your user is a member of the audio and games groups - you may need to login again for the first item to take effect
-          -----------------------------------------------------------------------------------------------------------------------------
+    - name: set post run message
+      ansible.builtin.set_fact:
+        post_run_message: |
+          {{ post_run_message | default('') }}
+          ---------- to run steam via sudo: ----------
+          | make sure your user is a member of the audio and games groups
+          | you may need to login again for the changes to take effect
           sudo usermod -aG games,audio <your_user_name>
-          ------------------------------------------------------------
-          option 1: run the following command manually to launch steam
-          ------------------------------------------------------------
-          xhost +; sudo -u {{ steam_user }} PULSE_SERVER=/{{ pipewire_pulse_socket }} XDG_RUNTIME_DIR=/tmp/{{ steam_user }} steam
-          -------------------------------------
-          option 2: run the provided cli script
-          -------------------------------------
+          ---------- option 1 ----------
+          | run the following command manually to launch steam
+          xhost +; sudo -u {{ steam_user }} PULSE_SERVER={{ pipewire_pulse_socket }} XDG_RUNTIME_DIR=/tmp/{{ steam_user }} steam
+          ---------- option 2 ----------
+          | run the provided cli script
           /usr/bin/steam_sudo
-          ----------------------------------------------
-          option 3: run the provided desktop application
-          ----------------------------------------------
+          ---------- option 3 ----------
+          | run the provided desktop application
           launch "Steam via sudo" in the graphical interface
       delegate_to: localhost
       run_once: true
