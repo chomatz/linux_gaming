@@ -18,6 +18,8 @@ xone_packages:
   - kernel
   - kernel-headers
 xone_repository_local: /opt/xone
-xone_repository_remote: https://github.com/medusalix/xone.git
+# medusalix has been inactive for a while - switching to a fork by dlundqvist
+#xone_repository_remote: https://github.com/medusalix/xone.git
+xone_repository_remote: https://github.com/dlundqvist/xone
 
 ...
