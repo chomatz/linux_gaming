@@ -91,7 +91,7 @@
         dest: /usr/share/applications/steam_sudo.desktop
         owner: root
         group: root
-        mo de: "0644"
+        mode: "0644"
 
     - name: set post run message
       ansible.builtin.set_fact:
