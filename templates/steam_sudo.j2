@@ -1,3 +1,47 @@
 #!/bin/env bash
-/usr/bin/xhost +
-/usr/bin/sudo -u {{ steam_user }} PULSE_SERVER={{ pipewire_pulse_socket }} XDG_RUNTIME_DIR=/tmp/{{ steam_user }} /usr/bin/steam
+
+function show_help () {
+	## -h	show help
+	echo "Usage: $0 [OPTION]"
+	echo "Run $(which steam) as the user STEAM."
+	echo
+	grep \#\# "$0" | sed 's/##//' | grep -v grep
+}
+
+function steam_kill () {
+	## -k	kill running steam process(es)
+	sudo -u {{ steam_user }} kill -9 $(ps aux | grep -i ^{{ steam_user }} | grep -v grep | sed 's/  */ /g' | cut -d " " -f 2 | xargs)
+	kill -9 $(ps aux | grep $0 | grep -v grep | sed 's/  */ /g' | cut -d " " -f 2 | xargs)
+}
+
+function steam_sudo () {
+	xhost +
+	sudo -u {{ steam_user }} PULSE_SERVER={{ pipewire_pulse_socket }} XDG_RUNTIME_DIR=/tmp/{{ steam_user }} $(which steam)
+}
+
+while getopts ":hk" OPT; do
+
+	case ${OPT} in
+
+		h)
+			show_help
+			exit
+			;;
+		k)
+			steam_kill
+			exit
+			;;
+		\?)
+			echo "Invalid option: $OPTARG"
+			exit
+			;;
+		:)
+			echo "Invalid option: $OPTARG requires an argument"
+			exit
+			;;
+
+	esac
+
+done
+
+steam_sudo
