@@ -75,7 +75,7 @@
     - name: create sudoers file for running steam
       ansible.builtin.copy:
         dest: /etc/sudoers.d/steam
-        content: "%games ALL=({{ steam_user }}) NOPASSWD:SETENV: /usr/bin/steam"
+        content: "%games ALL=({{ steam_user }}) NOPASSWD:SETENV: /usr/bin/steam, /usr/bin/kill"
 
     - name: create command-line application launcher
       ansible.builtin.template:
