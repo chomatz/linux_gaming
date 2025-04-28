@@ -8,7 +8,9 @@ steam_deck_repository:
   - holo
 steam_packages:
   - dbus-x11
+  - protontricks
   - steam
+  - winetricks
 steam_user: steam
 xone_packages:
   - cabextract

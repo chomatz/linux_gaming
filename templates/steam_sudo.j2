@@ -14,6 +14,11 @@ function steam_kill () {
 	kill -9 $(ps aux | grep $0 | grep -v grep | sed 's/  */ /g' | cut -d " " -f 2 | xargs)
 }
 
+function steam_protontricks () {
+	## -p	launch protontricks
+	sudo -u steam PULSE_SERVER=/tmp/pulse-socket XDG_RUNTIME_DIR=/tmp/steam protontricks --gui
+}
+
 function steam_sudo () {
 	xhost +
 	sudo -u {{ steam_user }} PULSE_SERVER={{ pipewire_pulse_socket }} XDG_RUNTIME_DIR=/tmp/{{ steam_user }} $(which steam)
@@ -29,6 +34,10 @@ while getopts ":hk" OPT; do
 			;;
 		k)
 			steam_kill
+			exit
+			;;
+		p)
+			steam_protontricks
 			exit
 			;;
 		\?)
