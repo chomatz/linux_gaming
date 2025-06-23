@@ -44,7 +44,8 @@
 
     - name: download firmware
       ansible.builtin.command:
-        cmd: xone-get-firmware.sh --skip-disclaimer
+        cmd: install/firmware.sh --skip-disclaimer
+        chdir: "{{ xone_repository_local }}"
 
   when: ansible_distribution == "Fedora"
 
