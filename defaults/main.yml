@@ -13,7 +13,7 @@ steam_packages:
   - winetricks
 steam_user: steam
 xone_packages:
-  - cabextract
+  - bsdtar
   - curl
   - dkms
   - git-core
